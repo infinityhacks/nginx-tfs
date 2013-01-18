@@ -776,7 +776,8 @@ ngx_http_tfs_alloc_st(ngx_http_tfs_t *t)
     st->parent = t;
 
     /* each st should have independent send/recv buf/peer/out_bufs,
-     and we only care about data server and name server(retry need) */
+     * and we only care about data server and name server(retry need)
+     */
 
     /* recv(from upstream servers) bufs */
     st->recv_chain = ngx_http_tfs_alloc_chains(t->pool, 2);
@@ -803,15 +804,14 @@ ngx_http_tfs_alloc_st(ngx_http_tfs_t *t)
     ngx_memcpy(&st->tfs_peer_servers[NGX_HTTP_TFS_DATA_SERVER],
                &t->tfs_peer_servers[NGX_HTTP_TFS_DATA_SERVER],
                sizeof(ngx_http_tfs_peer_connection_t));
-    st->tfs_peer_servers[NGX_HTTP_TFS_DATA_SERVER].peer.connection = NULL;
-
     b = &st->tfs_peer_servers[NGX_HTTP_TFS_DATA_SERVER].body_buffer;
     if (t->r_ctx.action.code == NGX_HTTP_TFS_ACTION_WRITE_FILE) {
         b->start = NULL;
 
     } else if (t->r_ctx.action.code == NGX_HTTP_TFS_ACTION_READ_FILE){
         /* alloc buf that can hold all segment's data,
-         so that ngx_http_tfs_process_buf_overflow would not happen */
+         * so that ngx_http_tfs_process_buf_overflow would not happen
+         */
         b->start = ngx_palloc(t->pool, NGX_HTTP_TFS_MAX_FRAGMENT_SIZE);
         if (b->start == NULL) {
             return NULL;
