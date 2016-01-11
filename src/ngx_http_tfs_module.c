@@ -1,6 +1,7 @@
 
 /*
  * Copyright (C) 2010-2015 Alibaba Group Holding Limited
+ * Copyright (C) 2016      JiaYanwei
  */
 
 
@@ -674,12 +675,19 @@ static char *
 ngx_http_tfs_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_tfs_srv_conf_t  *tscf = conf;
+    char*                    r;
 
     if (tscf->log != NULL) {
         return "is duplicate";
     }
 
-    return ngx_log_set_log(cf, &tscf->log);
+    r = ngx_log_set_log(cf, &tscf->log);
+
+    if (cf->args->nelts == 2) {
+        tscf->log->log_level = NGX_LOG_INFO;
+    }
+
+    return r;
 }
 
 
