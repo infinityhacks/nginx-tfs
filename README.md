@@ -6,10 +6,23 @@ Name
 Description
 ===========
 
+* This project is forked from alibaba/nginx-tfs which was discontinued itself and integrated in alibaba/tengine.
+* All changes of TFS module in alibaba/tengine were merged back with original author & commit date kept.
 * This module implements an asynchronous client of TFS(Taobao File System), providing RESTful API to it. [TFS](http://tfs.taobao.org) is a distributed file system developed by Taobao Inc.
 
-Example
+Install
 =======
+
+1. TFS use an open source JSON library for JSON support. Please install [yajl](http://lloyd.github.com/yajl/)-2.0.1 or later first.
+
+2. Download [Nginx](http://www.nginx.org/) or [Tengine](http://tengine.taobao.org/).
+
+3. ./configure --add-module=/path/to/nginx-tfs
+
+4. make && make install
+
+Example
+====
 
     http {
         #tfs_upstream tfs_rc {
@@ -21,7 +34,7 @@ Example
         #}
 
         tfs_upstream tfs_ns {
-            server 127.0.0.1:8108;
+            server 127.0.0.1:8100;
             type ns;
         }
 
@@ -76,7 +89,7 @@ server
 
 **Context**： *tfs_upstream*
 
-Defines the address of upstream TFS server. An address can be specified as a domain name or IP address.
+Defines the address of upstream TFS server. An address can be specified as a domain name or IP address. This directive must be defined.
 
 Example :
 
@@ -92,6 +105,8 @@ type
 **Context**： *tfs_upstream*
 
 Specify the type of upstream TFS server. It could be ns(NameServer) or rcs(RcServer), default is ns.
+
+It must be rcs if user-defined name is used. User-defined name also require MetaServer & RootServer.
 
 rcs\_zone
 --------------
@@ -154,7 +169,9 @@ tfs_pass
 
 **Context**： *location*
 
-Specify TFS upstream. Remember that protocol used here must be "tfs".
+Specify TFS upstream. It must be defined.
+
+Remember that protocol used here must be "tfs".
 
 Example:
 
@@ -174,7 +191,10 @@ tfs_keepalive
 
 **Context**： *http, server*
 
-Defines connection pool used by TFS module. This connection pool caches upstream connections.
+Defines connection pool used by TFS module. This connection pool caches upstream connections. This directive must be defined.
+
+
+The connection pool can be regarded as hash table with many buckets.
 
 The following parameters must be defined:
 
@@ -182,6 +202,8 @@ max_cached=<i>num</i>
     set the capacity of one hash bucket.
 bucket_count=<i>num</i>
     set the count of hash buckets.
+
+Note: The size of physical memory should be considered to define the capacity.
 
 Example:
 
@@ -198,6 +220,8 @@ tfs\_block\_cache\_zone
 
 Defines the shared memory zone used for BlockCache.
 
+Note: The size of physical memory should be considered to define the capacity.
+
 Example:
 
 	tfs_block_cache_zone size=256M;
@@ -213,9 +237,12 @@ tfs\_log
 
 Sets the TFS access log.
 
+If this directive was defined, the TFS access log will recorded to specified log file in certain format. See source code for the format.
 Example:
 
 	tfs_log "pipe:/usr/sbin/cronolog -p 30min /path/to/nginx/logs/cronolog/%Y/%m/%Y-%m-%d-%H-%M-tfs_access.log";
+
+Note: cronolog support depends on log extension of tengine.
 
 tfs\_body\_buffer\_size
 -----------------------
