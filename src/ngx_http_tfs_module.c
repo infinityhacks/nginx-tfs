@@ -5,6 +5,7 @@
  */
 
 
+#include <nginx.h>
 #include <ngx_core.h>
 #include <ngx_event.h>
 #include <ngx_http.h>
@@ -681,7 +682,19 @@ ngx_http_tfs_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return "is duplicate";
     }
 
+#if nginx_version < 1005002
+    {
+        ngx_str_t *value = cf->args->elts;
+        tscf->log = ngx_log_create(cf->cycle, &value[1]);
+    }
+
+    if (tscf->log == NULL) {
+        return NGX_CONF_ERROR;
+    }
+    r = ngx_log_set_levels(cf, tscf->log);
+#else
     r = ngx_log_set_log(cf, &tscf->log);
+#endif
 
     if (cf->args->nelts == 2) {
         tscf->log->log_level = NGX_LOG_INFO;

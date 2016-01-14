@@ -898,7 +898,7 @@ ngx_http_tfs_get_request_time(ngx_http_tfs_t *t)
 
     r = t->data;
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
-#ifdef tengine_version
+#if defined(tengine_version) && tengine_version>=1002003
     if (clcf->request_time_cache) {
         ngx_time_t *tp = ngx_timeofday();
         ms = (ngx_msec_int_t)
