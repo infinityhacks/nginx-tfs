@@ -1,6 +1,7 @@
 
 /*
  * Copyright (C) 2010-2015 Alibaba Group Holding Limited
+ * Copyright (C) 2016      JiaYanwei
  */
 
 
@@ -992,7 +993,11 @@ ngx_http_tfs_process_upstream_request(ngx_http_request_t *r, ngx_http_tfs_t *t)
             return;
         }
 
-        n = c->recv_chain(c, chain);
+        n = c->recv_chain(c, chain
+#if nginx_version >= 1007007
+                                  , 0
+#endif
+                         );
 
         if (n == NGX_AGAIN) {
             if (chain->buf->last == chain->buf->end) {
