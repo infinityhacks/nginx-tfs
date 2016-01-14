@@ -1,9 +1,11 @@
 
 /*
  * Copyright (C) 2010-2015 Alibaba Group Holding Limited
+ * Copyright (C) 2016      JiaYanwei
  */
 
 
+#include <nginx.h>
 #include <ngx_http_tfs_serialization.h>
 
 
@@ -56,6 +58,58 @@ ngx_http_tfs_deserialize_string(u_char **p, ngx_pool_t *pool,
 
     return NGX_OK;
 }
+
+
+#ifndef tengine_version
+void *
+ngx_prealloc(ngx_pool_t *pool, void *p, size_t old_size, size_t new_size)
+{
+    void *new;
+
+    // 如果p为空，则相对于在pool中分配一块新空间并返回指向该空间的指针
+    if (p == NULL) {
+        return ngx_palloc(pool, new_size);
+    }
+
+    // 如果所需重新分配的空间大小为0，则判断旧空间地址是否在pool的最后，
+    // 若是，则只需将pool的d.last指针移到旧空间地址的起始位置；
+    // 否则，使用ngx_pfree方法是否pool中的旧空间；
+    // 最后返回null。
+    if (new_size == 0) {
+        if ((u_char *) p + old_size == pool->d.last) {
+           pool->d.last = p;
+        } else {
+           ngx_pfree(pool, p);
+        }
+
+        return NULL;
+    }
+
+    // 如果所需重新分配的空间处于pool的最后，并且pool剩余空间
+    // 的大小大于所需分配空间的大小，则只需将pool的d.last指向
+    // 新空间的末尾并返回原空间的地址即可。
+    if ((u_char *) p + old_size == pool->d.last
+        && (u_char *) p + new_size <= pool->d.end)
+    {
+        pool->d.last = (u_char *) p + new_size;
+        return p;
+    }
+
+    // 如果以上条件均不符合，则需要通过ngx_palloc在pool内分配
+    // 一个新的空间，并在将旧空间内的数据拷贝到新空间内之后，
+    // 释放掉旧空间，返回新空间地址。
+    new = ngx_palloc(pool, new_size);
+    if (new == NULL) {
+        return NULL;
+    }
+
+    ngx_memcpy(new, p, old_size);
+
+    ngx_pfree(pool, p);
+
+    return new;
+}
+#endif
 
 
 ngx_int_t

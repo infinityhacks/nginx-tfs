@@ -1,9 +1,11 @@
 
 /*
  * Copyright (C) 2010-2015 Alibaba Group Holding Limited
+ * Copyright (C) 2016      JiaYanwei
  */
 
 
+#include <nginx.h>
 #include <ngx_tfs_common.h>
 #include <ngx_http_tfs_protocol.h>
 #include <ngx_http_tfs_errno.h>
@@ -889,7 +891,6 @@ ngx_http_tfs_get_content_type(u_char *data, ngx_str_t *type)
 ngx_msec_int_t
 ngx_http_tfs_get_request_time(ngx_http_tfs_t *t)
 {
-    ngx_time_t                *tp;
     ngx_msec_int_t             ms;
     struct timeval             tv;
     ngx_http_request_t        *r;
@@ -897,11 +898,14 @@ ngx_http_tfs_get_request_time(ngx_http_tfs_t *t)
 
     r = t->data;
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
+#ifdef tengine_version
     if (clcf->request_time_cache) {
-        tp = ngx_timeofday();
+        ngx_time_t *tp = ngx_timeofday();
         ms = (ngx_msec_int_t)
                  ((tp->sec - r->start_sec) * 1000 + (tp->msec - r->start_msec));
-    } else {
+    } else 
+#endif
+    {
         ngx_gettimeofday(&tv);
         ms = (tv.tv_sec - r->start_sec) * 1000
                  + (tv.tv_usec / 1000 - r->start_msec);
