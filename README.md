@@ -1,3 +1,5 @@
+[简体中文](README_cn.md)
+
 Name
 ====
 
@@ -6,9 +8,11 @@ Name
 Description
 ===========
 
-* This project is forked from alibaba/nginx-tfs which was discontinued itself and integrated in alibaba/tengine.
-* All changes of TFS module in alibaba/tengine were merged back with original author & commit date kept.
-* This module implements an asynchronous client of TFS(Taobao File System), providing RESTful API to it. [TFS](http://tfs.taobao.org) is a distributed file system developed by Taobao Inc.
+* This project is forked from **alibaba/nginx-tfs** which was discontinued itself and integrated in **[alibaba/tengine](https://github.com/alibaba/tengine)**.
+* Changes from **alibaba/nginx-tfs**:
+  * All changes of TFS module in **alibaba/tengine** were merged back with original author & commit date kept.
+  * Support OpenResty / official Nginx 1.0.x-1.9.x and engine 1.2.1-2.1.2 .
+* This module implements an asynchronous client of TFS(Taobao File System), providing [RESTful API](TFS_RESTful_API.md) to it. [TFS](http://tfs.taobao.org) is a distributed file system developed by Taobao Inc.
 
 Install
 =======

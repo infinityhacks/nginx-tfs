@@ -1,3 +1,5 @@
+[简体中文](TFS_RESTful_API_cn.md)
+
 #TFS RESTful API
 
 NOTE: <b>bold</b> words are fixed and reserved for API, <i>italics</i> words are input arguments.
