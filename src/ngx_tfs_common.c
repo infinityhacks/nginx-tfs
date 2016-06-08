@@ -894,16 +894,14 @@ ngx_http_tfs_get_request_time(ngx_http_tfs_t *t)
     ngx_msec_int_t             ms;
     struct timeval             tv;
     ngx_http_request_t        *r;
-    ngx_http_core_loc_conf_t  *clcf;
 
     r = t->data;
-    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 #if defined(tengine_version) && tengine_version>=1002003
     if (clcf->request_time_cache) {
         ngx_time_t *tp = ngx_timeofday();
         ms = (ngx_msec_int_t)
                  ((tp->sec - r->start_sec) * 1000 + (tp->msec - r->start_msec));
-    } else 
+    } else
 #endif
     {
         ngx_gettimeofday(&tv);
